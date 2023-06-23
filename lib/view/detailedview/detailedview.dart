@@ -238,6 +238,26 @@ class _DetailedViewState extends State<DetailedView> {
                 dataBox.delete(
                   widget.modelKey,
                 );
+                taskcontroller.clear();
+                notescontroller.clear();
+                datecontroller.clear();
+                timecontroller.clear();
+                image = null;
+                setState(() {});
+                Fluttertoast.showToast(
+                    msg: 'Task deleted successfully',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Theme.of(context).primaryColor,
+                    textColor: Colors.white,
+                    fontSize: 16.0);
+                Navigator.pop(context);
+                widget.homeBloc.add(
+                  LoadData(
+                    box: Hive.box('todo'),
+                  ),
+                );
               },
               icon: const Icon(
                 Icons.delete,

@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:developer';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -44,44 +46,28 @@ class NotificationServices {
     required DateTime scheduledTime,
   }) async {
     try {
-      // await Permission.scheduleExactAlarm.isDenied.then((value) {
-      //   if (!value) {
-      //     Permission.scheduleExactAlarm.request();
-      //   }
-      // });
       _notifications.zonedSchedule(
         id,
         title,
         body,
-        // tz.TZDateTime.from(
-        //   scheduledTime,
-        //   tz.local,
-        // ),
-        _nextInstanceOfTenAM(selectedTime: scheduledTime),
+        tz.TZDateTime.from(
+          scheduledTime,
+          tz.local,
+        ),
         await _notificationDetails(),
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
+    } on PlatformException {
+      log('Error');
+    } on HandleUncaughtErrorHandler {
+      log('Error');
+    } on ArgumentError {
+      log('Error');
     } catch (e) {
       log('Error caught$e');
     }
-  }
-
-  static tz.TZDateTime _nextInstanceOfTenAM({required DateTime selectedTime}) {
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    tz.TZDateTime scheduledDate = tz.TZDateTime(
-      tz.local,
-      selectedTime.year,
-      selectedTime.month,
-      selectedTime.day,
-      selectedTime.hour,
-      selectedTime.minute,
-    );
-    if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
-    }
-    return scheduledDate;
   }
 
   static Future cancelNotification() async {
