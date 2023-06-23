@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:phantom_solutions/core/data/model/todomodel.dart';
 import 'package:phantom_solutions/view/home/home_bloc/home_bloc.dart';
-
 import '../addtask/add_task.dart';
 import '../detailedview/detailedview.dart';
 
@@ -21,6 +21,8 @@ class _HomeScreenState extends State<HomeScreen> {
     dataBox = Hive.box('todo');
     super.initState();
   }
+
+  String formatted = DateFormat.yMMMd().format(DateTime.now());
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         height: 34,
                                       ),
                                       Text(
-                                        'October 20,2022',
+                                        formatted,
                                         style: Theme.of(context)
                                             .textTheme
                                             .displayMedium!

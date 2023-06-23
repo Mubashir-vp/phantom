@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
+
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationServices {
@@ -40,17 +43,29 @@ class NotificationServices {
     String? payload,
     required DateTime scheduledTime,
   }) async {
-    _notifications.zonedSchedule(
-      id,
-      title,
-      body,
-      _nextInstanceOfTenAM(selectedTime: scheduledTime),
-      await _notificationDetails(),
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      androidAllowWhileIdle: true,
-      matchDateTimeComponents: DateTimeComponents.time,
-    );
+    try {
+      // await Permission.scheduleExactAlarm.isDenied.then((value) {
+      //   if (!value) {
+      //     Permission.scheduleExactAlarm.request();
+      //   }
+      // });
+      _notifications.zonedSchedule(
+        id,
+        title,
+        body,
+        // tz.TZDateTime.from(
+        //   scheduledTime,
+        //   tz.local,
+        // ),
+        _nextInstanceOfTenAM(selectedTime: scheduledTime),
+        await _notificationDetails(),
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      );
+    } catch (e) {
+      log('Error caught$e');
+    }
   }
 
   static tz.TZDateTime _nextInstanceOfTenAM({required DateTime selectedTime}) {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:phantom_solutions/core/data/model/todomodel.dart';
 import 'package:phantom_solutions/view/home/home_bloc/home_bloc.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -14,6 +15,22 @@ import 'view/home/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await [
+    Permission.scheduleExactAlarm,
+    Permission.notification,
+  ].request().then((value) async {
+    await Permission.scheduleExactAlarm.isDenied.then((value) {
+      if (value) {
+        Permission.scheduleExactAlarm.request();
+      }
+    }).then(
+        (value) async => await Permission.notification.isDenied.then((value) {
+              if (value) {
+                Permission.notification.request();
+              }
+            }));
+  });
+
   NotificationServices().initNotification();
   tz.initializeTimeZones();
   Directory path = await getApplicationDocumentsDirectory();
